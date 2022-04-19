@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.12;
+pragma solidity 0.8.12;
 
 library Math {
 
@@ -39,11 +39,11 @@ contract ERC20Token {
     mapping(address => uint256) balances_;
     mapping (address => mapping (address => uint256)) internal allowed_;
 
-    function totalSupply() public view returns (uint256) { return totalSupply_; }
+    function totalSupply() external view returns (uint256) { return totalSupply_; }
 
-    function transfer(address to, uint256 value) public returns (bool) {
-        require(to != address(0));
-        require(value <= balances_[msg.sender]);
+    function transfer(address to, uint256 value) external returns (bool) {
+        require(to != address(0), "To should not be null.");
+        require(value <= balances_[msg.sender], "Not enough balance.");
 
         balances_[msg.sender] = balances_[msg.sender].sub(value);
         balances_[to] = balances_[to].add(value);
@@ -51,13 +51,13 @@ contract ERC20Token {
         return true;
     }
 
-    function balanceOf(address owner) public view returns (uint256 balance) { return balances_[owner]; }
+    function balanceOf(address owner) external view returns (uint256 balance) { return balances_[owner]; }
 
-    function transferFrom(address from, address to, uint256 value) public returns (bool) {
+    function transferFrom(address from, address to, uint256 value) external returns (bool) {
 
-        require(to != address(0));
-        require(value <= balances_[from]);
-        require(value <= allowed_[from][msg.sender]);
+        require(to != address(0), "To should not be null.");
+        require(value <= balances_[from], "Not enough balance.");
+        require(value <= allowed_[from][msg.sender], "Not enough balance.");
 
         balances_[from] = balances_[from].sub(value);
         balances_[to] = balances_[to].add(value);
@@ -68,18 +68,18 @@ contract ERC20Token {
         return true;
     }
 
-    function approve(address spender, uint256 value) public returns (bool) {
+    function approve(address spender, uint256 value) external returns (bool) {
         allowed_[msg.sender][spender] = value;
         emit Approval(msg.sender, spender, value);
         return true;
     }
 
-    function allowance(address owner, address spender) public view returns (uint256) {
+    function allowance(address owner, address spender) external view returns (uint256) {
         return allowed_[owner][spender];
     }
 
-    function burn(uint256 value) public {
-        require(value <= balances_[msg.sender]);
+    function burn(uint256 value) external {
+        require(value <= balances_[msg.sender], "Not enough balance.");
         address burner = msg.sender;
         balances_[burner] = balances_[burner].sub(value);
         emit Transfer(burner, address(0), value);
@@ -111,19 +111,19 @@ contract ASSA is ERC20Token {
         return true;
     }
 
-    function symbol() public pure returns (string memory) {
+    function symbol() external pure returns (string memory) {
         return _symbol;
     }
 
-    function decimals() public pure returns (uint8) {
+    function decimals() external pure returns (uint8) {
         return _decimals;
     }
 
-    function name() public pure returns (string memory) {
+    function name() external pure returns (string memory) {
         return _name;
     }
 
-    function getOwner() public view returns (address) {
+    function getOwner() external view returns (address) {
         return _owner;
     }    
 }
